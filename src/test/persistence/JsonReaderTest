@@ -1,0 +1,55 @@
+package persistence;
+
+
+import model.Book;
+import model.Library;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+// Tests for JsonReader
+public class JsonReaderTest extends JsonTest {
+
+    @Test
+    void testReaderNonExistentFile() {
+        JsonReader reader = new JsonReader("./data/noSuchFile.json");
+        try {
+            Library li = reader.read();
+            fail("IOException expected");
+        } catch (IOException e) {
+            // pass
+        }
+    }
+
+    @Test
+    void testReaderEmptyWorkRoom() {
+        JsonReader reader = new JsonReader("./data/testReaderEmptyLibrary.json");
+        try {
+            Library li = reader.read();
+            assertEquals("My library", li.getName());
+            assertEquals(0, li.numBooks());
+        } catch (IOException e) {
+            fail("Couldn't read from file");
+        }
+    }
+
+    @Test
+    void testReaderGeneralWorkRoom() {
+        JsonReader reader = new JsonReader("./data/testReaderGeneraLibrary.json");
+        try {
+            Library li = reader.read();
+            assertEquals("My library", li.getName());
+            List<Book> books = li.getBooks();
+            assertEquals(2, books.size());
+            checkBook("Jane Eyre", "Charlotte Bronte", "Novel", 1847, true,
+                    books.get(0));
+            checkBook("Harry Potter and the Sorcerer's Stone", "Joanne Rowling", "Fantasy", 2000,
+                    true, books.get(1));
+        } catch (IOException e) {
+            fail("Couldn't read from file");
+        }
+    }
+}
